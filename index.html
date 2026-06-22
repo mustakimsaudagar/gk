@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GK Quiz Challenge</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(-45deg,#1e3c72,#2a5298,#00c9ff,#92fe9d);
+background-size:400% 400%;
+animation:bgMove 10s infinite alternate;
+overflow:hidden;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+100%{background-position:100% 50%;}
+}
+
+.quiz-box{
+width:700px;
+max-width:95%;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+padding:30px;
+border-radius:20px;
+text-align:center;
+color:white;
+box-shadow:0 0 30px rgba(0,0,0,.3);
+animation:float 3s infinite ease-in-out;
+}
+
+@keyframes float{
+50%{transform:translateY(-10px);}
+}
+
+h1{
+margin-bottom:20px;
+}
+
+.question{
+font-size:24px;
+margin-bottom:20px;
+min-height:80px;
+}
+
+.option{
+display:block;
+width:100%;
+padding:15px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:18px;
+background:white;
+color:#333;
+transition:.3s;
+}
+
+.option:hover{
+transform:scale(1.05);
+background:#ffe082;
+}
+
+.feedback{
+font-size:22px;
+margin-top:15px;
+font-weight:bold;
+min-height:40px;
+}
+
+.next-btn{
+padding:12px 30px;
+margin-top:20px;
+border:none;
+border-radius:10px;
+background:#00e676;
+color:white;
+font-size:18px;
+cursor:pointer;
+display:none;
+}
+
+.score{
+font-size:30px;
+margin:20px 0;
+}
+
+.star{
+position:absolute;
+color:white;
+font-size:25px;
+animation:fall linear infinite;
+}
+
+@keyframes fall{
+from{
+transform:translateY(-100px);
+}
+to{
+transform:translateY(110vh);
+}
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-box">
+
+<h1>🌍 GK Quiz Challenge</h1>
+
+<div id="quiz">
+
+<div class="question" id="question"></div>
+
+<div id="options"></div>
+
+<div class="feedback" id="feedback"></div>
+
+<button class="next-btn" id="nextBtn">Next Question</button>
+
+</div>
+
+</div>
+
+<script>
+
+// Floating stars
+for(let i=0;i<25;i++){
+let star=document.createElement("div");
+star.innerHTML="⭐";
+star.className="star";
+star.style.left=Math.random()*100+"vw";
+star.style.animationDuration=(3+Math.random()*5)+"s";
+document.body.appendChild(star);
+}
+
+const quizData=[
+{
+q:"Which planet is known as the Red Planet?",
+options:["Earth","Mars","Venus","Jupiter"],
+answer:"Mars"
+},
+{
+q:"What is the capital of India?",
+options:["Mumbai","Delhi","Kolkata","Chennai"],
+answer:"Delhi"
+},
+{
+q:"Who invented the telephone?",
+options:["Newton","Einstein","Alexander Graham Bell","Tesla"],
+answer:"Alexander Graham Bell"
+},
+{
+q:"Which is the largest ocean on Earth?",
+options:["Indian","Pacific","Atlantic","Arctic"],
+answer:"Pacific"
+},
+{
+q:"How many continents are there?",
+options:["5","6","7","8"],
+answer:"7"
+}
+];
+
+let current=0;
+let score=0;
+
+const question=document.getElementById("question");
+const options=document.getElementById("options");
+const feedback=document.getElementById("feedback");
+const nextBtn=document.getElementById("nextBtn");
+
+function loadQuestion(){
+
+feedback.innerHTML="";
+nextBtn.style.display="none";
+
+question.innerHTML=
+`Question ${current+1} of 5<br><br>${quizData[current].q}`;
+
+options.innerHTML="";
+
+quizData[current].options.forEach(opt=>{
+
+let btn=document.createElement("button");
+btn.className="option";
+btn.innerText=opt;
+
+btn.onclick=()=>checkAnswer(opt);
+
+options.appendChild(btn);
+
+});
+}
+
+function checkAnswer(selected){
+
+let correct=quizData[current].answer;
+
+let buttons=document.querySelectorAll(".option");
+buttons.forEach(btn=>btn.disabled=true);
+
+if(selected===correct){
+score++;
+feedback.innerHTML="✅ Correct Answer!";
+feedback.style.color="#7CFC00";
+}else{
+feedback.innerHTML=
+`❌ Wrong! Correct Answer: ${correct}`;
+feedback.style.color="#ff5252";
+}
+
+nextBtn.style.display="inline-block";
+}
+
+nextBtn.onclick=()=>{
+
+current++;
+
+if(current<quizData.length){
+loadQuestion();
+}else{
+showResult();
+}
+
+};
+
+function showResult(){
+
+let message="";
+
+if(score===5){
+message="🏆 Outstanding! You are a GK Master!";
+}
+else if(score>=3){
+message="🌟 Great Job! Keep learning and growing!";
+}
+else{
+message="💪 Never stop learning. Every expert was once a beginner!";
+}
+
+document.getElementById("quiz").innerHTML=`
+<h1>🎉 Quiz Completed 🎉</h1>
+
+<div class="score">
+Your Score: ${score} / 5
+</div>
+
+<h2>${message}</h2>
+
+<br>
+
+<p style="font-size:20px;">
+Knowledge grows when you stay curious.
+Keep learning something new every day! 🚀
+</p>
+
+<br>
+
+<button onclick="location.reload()"
+style="
+padding:15px 30px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#00e676;
+color:white;
+cursor:pointer;">
+Play Again
+</button>
+`;
+
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
